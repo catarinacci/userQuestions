@@ -94,23 +94,25 @@ export const addQuestion = async (req: Request, res: Response) => {
   );
   if (!question) {
     throw new QuestionError();
-  };
+  }
 
   //pregunto si la respuesta corresponde a la pregunta
-  const answer = question.answers.findIndex(questionAnswer => questionAnswer.answer_id == response.id_answer)
+  const answer = question.answers.findIndex(
+    (questionAnswer) => questionAnswer.answer_id == response.id_answer
+  );
   //console.log("answerrrrr",answer)
   if (answer == -1) {
     throw new AnswerError();
   }
 
   //pregunto si ya existe la pregunta en el usuario
-  const questionExist = user.questions.findIndex(userQuestion => userQuestion._id == response.id_question)
+  const questionExist = user.questions.findIndex(
+    (userQuestion) => userQuestion._id == response.id_question
+  );
   //console.log("questionExist",questionExist)
   if (questionExist == 0) {
     throw new QuestionExistError();
   }
-
-
 
   const questionAnswer = await Question.aggregate([
     {
@@ -196,26 +198,26 @@ export const register = {
   },
 };
 
-export const sendEmail = async(req:Request,res:Response) =>{
-  const {body} = req;
-  
-const user = await User.findById(body.id_user)
-if(!user){
-  throw new UserError();
-}
-// Example of sending an email
-const email=await emailService.sendEmail({
-  to: user.email,
-  subject: "Test Email",
-  template: "welcome",
-  context: {
-      name: user.name,
-      message: "This is a test message"
+export const sendEmail = async (req: Request, res: Response) => {
+  const { body } = req;
+
+  const user = await User.findById(body.id_user);
+  if (!user) {
+    throw new UserError();
   }
-});
-res.json({email:email,user:user})
-  
-}
+  // Example of sending an email
+  await emailService.sendEmail({
+    to: user.email,
+    subject: "Bienvenido a la plataforma",
+    template: "welcome",
+    context: {
+      name: user.name,
+      message: "Gracias por realizar el cuestionario, tus respuestas ya fueron analizadas",
+      questions: user.questions,
+    },
+  });
+  res.json({ user: user });
+};
 
 export const error = async (next: NextFunction) => {
   //throw new Error("Error creado")

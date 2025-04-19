@@ -9,7 +9,7 @@ import userRoutes from "./routes/user";
 import { errorHandler } from "./middlewares/errorHandler";
 import { engine } from 'express-handlebars';
 import path from 'path';
-import __dirname from "./utils/dirnameHandlebars";
+//import __dirname from "./utils/dirnameHandlebars";
 
 dotenv.config();
 
@@ -24,11 +24,6 @@ const corsOptions = {
 };
 //settings
 app.set('port', process.env.PORT || 3000);
-
-//  handlebars
-app.engine('handlebars', engine());
-app.set('view engine', 'handlebars');
-app.set('views', path.join(__dirname, 'views'));
 
 //middleware
 app.use(morgan('dev'));

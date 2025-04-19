@@ -2,6 +2,19 @@ import nodemailer, { Transporter } from 'nodemailer';
 import Handlebars from 'handlebars';
 import fs from 'fs';
 import path from 'path';
+import { SendEmailError } from '../utils/SendEmailError';
+
+// Define compile options interface
+interface HandlebarsCompileOptions {
+    allowProtoPropertiesByDefault?: boolean;
+    allowProtoMethodsByDefault?: boolean;
+    noEscape?: boolean;
+    strict?: boolean;
+    knownHelpers?: {
+        [name: string]: boolean;
+    };
+    knownHelpersOnly?: boolean;
+}
 
 interface EmailOptions {
     to: string;
@@ -28,12 +41,20 @@ class EmailService {
     async sendEmail({ to, subject, template, context }: EmailOptions): Promise<void> {
         try {
             // Read template file
-            const templatePath = path.join(__dirname, '../templates', `${template}.hbs`);
+            const templatePath = path.join(process.cwd(), 'src/templates', `${template}.hbs`);
             const source = fs.readFileSync(templatePath, 'utf-8');
             
-            // Compile template
-            const compiledTemplate = Handlebars.compile(source);
-            const html = compiledTemplate(context);
+            // Configure Handlebars runtime and compile template
+            const runtimeOpts = {
+                allowProtoPropertiesByDefault: true,
+                allowProtoMethodsByDefault: true
+            } as HandlebarsCompileOptions;
+            
+            const compiledTemplate = Handlebars.compile(source, runtimeOpts);
+            const html = compiledTemplate(context, { 
+                allowProtoPropertiesByDefault: true,
+                allowProtoMethodsByDefault: true
+            });
 
             // Send email
             await this.transporter.sendMail({
@@ -46,7 +67,7 @@ class EmailService {
             console.log('Email sent successfully');
         } catch (error) {
             console.error('Error sending email:', error);
-            throw new Error('Failed to send email');
+            throw new SendEmailError();
         }
     }
 }
