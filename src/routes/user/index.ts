@@ -6,7 +6,7 @@ const userRoutes = Router();
 
 userRoutes.post("/register",register.check, register.do);
 userRoutes.get("/get-questions/:id", getQuestions)
-userRoutes.post("/add-question", addQuestion)
+userRoutes.post("/add-question", addQuestion.check, addQuestion.do)
 userRoutes.post("/send-email", sendEmail)
 
 export default userRoutes;

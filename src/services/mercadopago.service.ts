@@ -1,4 +1,5 @@
 import mercadopago from 'mercadopago';
+import { ExternalServiceError } from '../middlewares/errorHandler';
 
 interface CreatePreferenceOptions {
     title: string;
@@ -8,8 +9,12 @@ interface CreatePreferenceOptions {
 
 class MercadoPagoService {
     constructor() {
+        const accessToken = process.env.MP_ACCESS_TOKEN;
+        if (!accessToken) {
+            throw new ExternalServiceError('MercadoPago', 'Token de acceso no configurado');
+        }
         mercadopago.configure({
-            access_token: process.env.MP_ACCESS_TOKEN || ''
+            access_token: accessToken
         });
     }
 
@@ -36,6 +41,9 @@ class MercadoPagoService {
             };
             console.log("Preference data",preferenceData)
             const { body } = await mercadopago.preferences.create(preferenceData);
+            if (!body || !body.id) {
+                throw new ExternalServiceError('MercadoPago', 'Error al crear la preferencia de pago');
+            }
             
             return {
                 id: body.id,
@@ -44,17 +52,29 @@ class MercadoPagoService {
             };
         } catch (error) {
             console.error('Error creating payment:', error);
-            throw error;
+            throw new ExternalServiceError(
+                'MercadoPago',
+                error instanceof Error ? error.message : 'Error al crear el pago'
+            );
         }
     }
 
     async handleWebhook(paymentId: string) {
         try {
+            if (!paymentId) {
+                throw new ExternalServiceError('MercadoPago', 'ID de pago no proporcionado');
+            }
             const { body } = await mercadopago.payment.findById(Number(paymentId));
+            if (!body) {
+                throw new ExternalServiceError('MercadoPago', 'No se encontró información del pago');
+            }
             return body;
         } catch (error) {
             console.error('Error handling webhook:', error);
-            throw error;
+            throw new ExternalServiceError(
+                'MercadoPago',
+                error instanceof Error ? error.message : 'Error al procesar el webhook'
+            );
         }
     }
 }
