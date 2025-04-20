@@ -39,8 +39,8 @@ export const createPayment = async (req: Request<{}, {}, PaymentRequest>, res: R
 
 export const handleWebhook = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { type, data } = req.query;
-        
+        const { type, data } = req.body;
+        console.log("handlewebhook","type",{type},"data",{data})
         // We're only interested in payment webhooks
         if (type === 'payment' && data && typeof data === 'object' && 'id' in data) {
             const paymentId = String(data.id);

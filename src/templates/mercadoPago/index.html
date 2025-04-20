@@ -10,18 +10,18 @@
     <script>
         async function createPayment() {
             try {
-                const response = await fetch('http://localhost:8000/api/payments/create', {
+                const response = await fetch('http://localhost:3000/api/payments/create', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         title: "Test Product",
-                        price: 100,
+                        price: 10,
                         quantity: 1
                     })
                 });
-
+                console.log("Response",response)
                 const data = await response.json();
                 if (data.success && data.preference) {
                     window.location.href = data.preference.init_point;

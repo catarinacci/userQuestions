@@ -34,7 +34,7 @@ class MercadoPagoService {
                 binary_mode: true,
                 notification_url: `${process.env.FRONTEND_URL}/api/payments/webhook`
             };
-
+            console.log("Preference data",preferenceData)
             const { body } = await mercadopago.preferences.create(preferenceData);
             
             return {

@@ -41,7 +41,7 @@ class EmailService {
     async sendEmail({ to, subject, template, context }: EmailOptions): Promise<void> {
         try {
             // Read template file
-            const templatePath = path.join(process.cwd(), 'src/templates', `${template}.hbs`);
+            const templatePath = path.join(process.cwd(), 'src/templates/email', `${template}.hbs`);
             const source = fs.readFileSync(templatePath, 'utf-8');
             
             // Configure Handlebars runtime and compile template
