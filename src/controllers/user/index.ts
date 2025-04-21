@@ -4,10 +4,6 @@ import * as Joi from "joi";
 import { validateBody } from "../../helpers/validateBody";
 import mongoose from "mongoose";
 import Question from "../../models/question";
-import { UserError } from "../../utils/UserError";
-import { QuestionError } from "../../utils/QuestionError";
-import { AnswerError } from "../../utils/AnswerError";
-import { QuestionExistError } from "../../utils/QuestionExistError";
 import { emailService } from "../../services/email.service";
 import {
   NotFoundError,
@@ -238,7 +234,7 @@ export const sendEmail = async (req: Request, res: Response) => {
 
   const user = await User.findById(body.id_user);
   if (!user) {
-    throw new UserError();
+    throw new NotFoundError("Usuario");
   }
   // Example of sending an email
   await emailService.sendEmail({

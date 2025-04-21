@@ -2,7 +2,7 @@ import nodemailer, { Transporter } from 'nodemailer';
 import Handlebars from 'handlebars';
 import fs from 'fs';
 import path from 'path';
-import { SendEmailError } from '../utils/SendEmailError';
+import { ExternalServiceError } from '../middlewares/errorHandler';
 
 // Define compile options interface
 interface HandlebarsCompileOptions {
@@ -67,7 +67,7 @@ class EmailService {
             console.log('Email sent successfully');
         } catch (error) {
             console.error('Error sending email:', error);
-            throw new SendEmailError();
+            throw new ExternalServiceError('Gmail', 'No se pudo enviar el correo');
         }
     }
 }
